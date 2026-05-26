@@ -1,0 +1,5 @@
+config.py
+schedule.json
+*.swp*
+test/
+__pycache__/
