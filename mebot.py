@@ -31,12 +31,14 @@ def clear_cookies() -> None :
 	context.clear_cookies()
 
 def goto_login_page_action(args : dict, event : Event) -> None :
+	global main_page
 	Logger.log(LogType.TRACE, "Goto login page")
 	main_page.goto(args["url"], timeout = args["timeout"])
 	main_page.wait_for_load_state()
 	return
 
 def login_operation_action(args : dict, event : Event) -> None :
+	global main_page
 	Logger.log(LogType.TRACE, "Logging")
 	main_page.fill("input[id='username']", args["username"])
 	main_page.fill("input[id='password']", args["password"])
@@ -45,24 +47,27 @@ def login_operation_action(args : dict, event : Event) -> None :
 	return
 
 def goto_preview_course_page_action(args : dict, event : Event) -> None :
+	global main_page
 	Logger.log(LogType.TRACE, f"Goto {str(event)} course preview page")
 	main_page.goto(event.url, timeout = args["timeout"])
 	main_page.wait_for_load_state()
 	return
 
 def participate_course_action(args : dict, event : Event) -> None :
+	global main_page, course_page
 	Logger.log(LogType.TRACE, f"Participating in course {str(event)}")
 	with main_page.expect_popup(timeout = args["timeout"]) as popup_info :
 		main_page.get_by_role("link", name = "پیوستن به جلسه").click(timeout = args["timeout"])
 	Logger.log(LogType.TRACE, "The course has started")
 	course_page = popup_info.value
 	course_page.wait_for_load_state()
-	bigbluebutton_page.get_by_role("button", name = "بستن").click()
+	course_page.get_by_role("button", name = "بستن").click()
 	course_page.wait_for_load_state()
-	bigbluebutton_page.get_by_role("button", name = "بستن").click()
+	course_page.get_by_role("button", name = "بستن").click()
 	return
 
-def wait_course_finish_action(args : dict) -> None :
+def wait_course_finish_action(args : dict, event : Event) -> None :
+	global course_page
 	Logger.log(LogType.TRACE, "Wait for the course to end")
 	with course_page.expect_event("close", timeout = 0) :
 		pass
