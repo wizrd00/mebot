@@ -93,6 +93,7 @@ def main() -> None :
 	except KeyboardInterrupt :
 		sys.exit()
 	else :
+		Logger.log(LogType.EVENT, "Done")
 		context.close()
 		browser.close()
 	return
